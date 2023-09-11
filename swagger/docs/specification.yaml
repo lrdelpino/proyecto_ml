@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: Challenge ML
+  description: Api de prueba realizada para el challenge de ml
+  version: v1.0.0
+  contact:
+    name: Leonardo Delpino
+    email: Lrdelpino91@gmail.com
+servers:
+  - url: http://localhost:8083/api
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+paths:
+  /api/login:
+    post:
+      description: Devuelve el jwt token que permite usar los demás endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Inicio de sesión exitoso.
+          content:
+            application/json:
+              example:
+                token: "jnqwodjnqwojdnqjdnqwodnqwjodn"
+        '401':
+          description: Credencial incorrecta
+  /api/getIpIdentification:
+    get:
+      description: Obtiene la información de la IP
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Información de la IP del país
+          content:
+            application/json:
+              example:
+                country_name: "Argentina"
+                country_iso: "AR"
+                EUR_conversion: 0.002669
+                USD_conversion: 0.002857
+        '401':
+          description: Token no proporcionado
+  /api/addIpTobanlist:
+    post:
+      description: Agrega la ip que se envia mediante el request a una banlist que evita que esa misma tenga acceso al los endpoints
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ip:
+                  type: string
+      responses:
+        '200':
+          description: mensaje de exito al agregar la ip o que ya se encuentra la ip en la banlist
+          content:
+            application/json:
+              example:
+                msg: "la ip {ip} fue agregada a la banlist"
+        '400': 
+          description: mensaje que dice que no puede ser una ip vacia o que la ip no tiene el formato adecuado
+          content:
+            application/json:
+              example:
+                msg: la direccion ip no tiene formato valido
+        '401':
+          description: Token no proporcionado
+  /api/deleteIpFromBanlist:
+    post:
+      description: borra de la banlist la ip que es enviada mediante el request lo que permite que se pueda volver a acceder a los endpoints
+      security:
+        - BearerAuth: []
+      requestBody:
+        require: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ip:
+                    type: string
+      responses:
+        '200':
+          description: mensaje de exito al borrar la ip o indicando que la ip no se encuentra en la lista
+          content:
+            application/json:
+              example:
+                msg: "ip {ip} fue eliminada de la banlist"
+        '400':
+          description: mensaje que dice que no puede ser una ip vacia o que la ip no tiene el formato adecuado
+          content:
+            application/json:
+              example:
+                msg: la direccion ip no tiene formato valido
+        '401':
+          description: Token no proporcionado
+
